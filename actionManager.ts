@@ -2,6 +2,7 @@
 import { Message } from 'wechaty'
 import { resolveMeowAction } from './meowAction'
 import { resolveCooCooAction, resolveSelfCooCooAction } from './cooCooAction'
+import { resolveChargeAction } from './chargeAction'
 
 interface ActionResolver {
     (message: Message): Promise<Array<string>>;
@@ -14,7 +15,7 @@ function mentionActionResolvers(): Array<ActionResolver> {
 
 function commonActionResolvers(): Array<ActionResolver> {
     // All actions will be resolved.
-    return [resolveCooCooAction];
+    return [resolveCooCooAction, resolveChargeAction];
 }
 
 async function onCommonMessage(message: Message): Promise<Array<string>> {

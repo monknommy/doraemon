@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-BOT=$1
-
-
 docker run \
   -it --rm \
   --name doraemon \
   --mount type=bind,source="$(pwd)",target=/bot \
+  --mount type=bind,source="$(pwd)",target=/wechaty/bot \
   zixia/wechaty \
-  "$BOT"
+  bash

@@ -2,3 +2,6 @@ doraemon.memory-card.json
 .dat.*
 .config/pulse
 .pki
+.npm/_logs
+update-notifier-npm.json
+.bash_history
