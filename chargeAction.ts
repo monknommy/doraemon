@@ -21,31 +21,66 @@ import { Message } from 'wechaty'
 // }
 
 async function getMentionNames(message: Message): Promise<Array<string>> {
-    const users = await message.mention();
+    const room = message.room();
+    if (room == null) {
+        console.error('room is empty.');
+        return [];
+    }
+
+    let users = [];
+    if (message.text().includes('@all') || message.text().includes('@所有人') ) {
+        users = await room.memberAll();
+    } else {
+        users = await message.mention();
+    }
+
     if (users.length <= 0) {
         return [];
-        //return [message.from().name()];
     } else {
         return users.filter(user => !user.self()).map(user => user.name());
     }
 }
 
+ function getAmount(message: Message): number {
+    const regrex = /[0-9]+(\.[0-9]+)?/;
+    const match_result = regrex.exec(message.text());
+    if (match_result == null) {
+        return 0;
+    }
+    return Math.ceil(parseFloat(match_result[0]) * 100);
+}
+
+/*
+ * accepted formats:
+ * "charge @lexi 100.5"
+ * "charge @lexi @jimmy 100.5"
+ * "charge @all 100.5"
+ */
 export async function resolveChargeAction(message: Message): Promise<Array<string>> {
-     await getMentionNames(message);
     const room = message.room();
     if (room == null) {
         return [];
     }
-
-    if (message.text().includes('@all') || message.text().includes('@所有人') ) {
-        console.log('all detected!');
+    
+    if (!message.text().includes('charge') && !message.text().includes('Charge')) {
+        return [];
     }
-    const members = await room.memberAll();
-    console.log(members.filter(user => !user.self()).map(user => user.name()));
-    return [];
-    // if (!await canResolve(message)) {
-    //     return [];
-    // }
+
+    const from_user = message.from();
+    if (from_user == null) {
+        return [];
+    }
+    const lender = from_user.name();
+
+    const target_users = await getMentionNames(message);
+    if (target_users.length <= 0) {
+        return [];
+    }
+    const amount = getAmount(message);
+    const each_amount = Math.ceil(amount/target_users.length);
+    response = lender + " charge " + target_users.join(",") + " " + each_amount/100 + " each, total: " + amount/100;
+    console.log("[chargeAction Response]" + response);
+    return [response];
     
     // if (!fs.existsSync(STORAGE_PATH)){
     //     fs.mkdirSync(STORAGE_PATH);
