@@ -2,7 +2,7 @@
 import { Message } from 'wechaty'
 import { resolveMeowAction } from './meowAction'
 import { resolveCooCooAction, resolveSelfCooCooAction } from './cooCooAction'
-import { resolveChargeAction } from './chargeAction'
+import { resolveChargeAction, resolveChargeReportAction } from './chargeAction'
 
 interface ActionResolver {
     (message: Message): Promise<Array<string>>;
@@ -10,7 +10,7 @@ interface ActionResolver {
 
 function mentionActionResolvers(): Array<ActionResolver> {
     // Priority sensitive here. Once an action is resolved, other action is ignored.
-    return [resolveSelfCooCooAction, resolveMeowAction];
+    return [resolveChargeReportAction, resolveSelfCooCooAction, resolveMeowAction,];
 }
 
 function commonActionResolvers(): Array<ActionResolver> {
